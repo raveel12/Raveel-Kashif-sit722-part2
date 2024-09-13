@@ -1,0 +1,57 @@
+# Write Kubernetes Deployment Script
+
+# api version is defined
+apiVersion: apps/v1
+
+# the kind of resource being created
+kind: Deployment
+
+# metadata for deployment with name
+metadata:
+  name: book-catalog
+
+# specifications for deployment with number of replicas and pod template
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-catalog
+  template:
+    metadata:
+      labels:
+        app: book-catalog
+
+# specification for the containers running in the pod
+    spec:
+      containers: 
+      - name: book-catalog
+        image: week08_part2:1
+        imagePullPolicy: Never
+        
+        # environment variable passes to the container, as here it is DATABASE_URL to connect to postgreSQL database
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://raveelkashif_sit722_6_2p_user:8qCBnHAcH8zVK0YmsXbcdJgbhoVQrIYA@dpg-crhc2kd6l47c73c625lg-a.oregon-postgres.render.com/raveelkashif_sit722_6_2p"
+---
+# API version used for defining a Service resource
+apiVersion: v1
+# Specifies that the kind of resource is a Service
+kind: Service
+# Metadata for the service, including its name.
+metadata:
+  name: book-catalog
+
+# Specification for the service, which consists of selector to linked with the correct pods.
+spec:
+  selector:
+    app: book-catalog
+
+# the type of service, which is NodePort here
+  type: NodePort
+  
+  # Defines at which ports the service will run at. 
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 30000
